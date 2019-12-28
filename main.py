@@ -23,7 +23,10 @@ class AddLocationForm(BoxLayout):
           self.search_results._trigger_reset_populate()
 
 class LocationButton(ListItemButton):
-      pass       
+      def show_current_weather(self,location):
+            from kivy.uix.label import Label
+            self.clear_widgets()
+            self.add_widget(Label(text=location))
       
       
 class WeatherApp(App):
