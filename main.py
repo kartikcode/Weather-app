@@ -3,9 +3,20 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty
 from kivy.network.urlrequest import UrlRequest
 from kivy.uix.listview import ListItemButton
+from kivy.uix.label import Label
+from kivy.factory import Factory
 
 class WeatherRoot(BoxLayout):
-      pass
+      def show_current_weather(self,location):
+            self.clear_widgets()
+            current_weather= Factory.CurrentWeather()
+            current_weather.location=location
+            self.add_widget(current_weather)
+       
+      def show_add_location_form(self):
+            self.clear_widgets()
+            self.add_widget(AddLocationForm())
+      
 
 class AddLocationForm(BoxLayout):
       search_input=ObjectProperty()
@@ -20,14 +31,10 @@ class AddLocationForm(BoxLayout):
           self.search_results.item_strings=cities
           self.search_results.adapter.data.clear()
           self.search_results.adapter.data.extend(cities)
-          self.search_results._trigger_reset_populate()
+          self.search_results.trigger_reset_populate()
 
 class LocationButton(ListItemButton):
-      def show_current_weather(self,location):
-            from kivy.uix.label import Label
-            self.clear_widgets()
-            self.add_widget(Label(text=location))
-      
+     pass
       
 class WeatherApp(App):
       pass
