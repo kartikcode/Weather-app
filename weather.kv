@@ -13,6 +13,9 @@ WeatherRoot:
             TextInput:
                 id: search_box
                 size_hint_x:50
+                multiline: False
+                focus: True
+                on_text_validate:  root.search_location()
             Button:
                 text:"Search"
                 size_hint_x:25
@@ -43,5 +46,6 @@ WeatherRoot:
         height:"40dp"
         Button:
             text:"Add Location"
+            on_press:app.root.show_add_location_form
         Button:
             text:"Forecast"
