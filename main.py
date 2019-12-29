@@ -4,14 +4,36 @@ from kivy.properties import ObjectProperty
 from kivy.network.urlrequest import UrlRequest
 from kivy.uix.listview import ListItemButton
 from kivy.uix.label import Label
-from kivy.factory import Factory
+from kivy.properties import ListProperty
+from kivy.properties import StringProperty
+from kivy.properties import NumericProperty
 
 class WeatherRoot(BoxLayout):
-      def show_current_weather(self,location):
+      current_weather= ObjectProperty()
+      
+      def show_current_weather(self,location= None):
             self.clear_widgets()
-            current_weather= Factory.CurrentWeather()
-            current_weather.location=location
-            self.add_widget(current_weather)
+            
+            if self.current_weather is None:
+                  self.current_weather= CurrentWeather()
+                  
+            if location is not None:
+                  self.current_weather.location=location
+            
+            self.current_weather.update_weather()
+            self.add_widget(self.current_weather)
+            
+      def update_weather(self):
+            weather_template="http://api.openweathermap.org/data/2.5/" + "weather?q={},{}&units=metric"
+            weather_url=weather_template.format(*self.location)
+            request=UrlRequest(weather_url,self.weather_retreived)
+            
+      def weather_retreived(self,request,data):
+            data=json.loads(data.decode()) if not isinstance(data,dict) else data
+            self.conditions=data['weather'][0]['description']
+            self.temp= data['main']['temp']
+            self.temp_min=data['main']['temp_min']
+            self.temp_max=data['main']['temp_max']
        
       def show_add_location_form(self):
             self.clear_widgets()
@@ -32,9 +54,20 @@ class AddLocationForm(BoxLayout):
           self.search_results.adapter.data.clear()
           self.search_results.adapter.data.extend(cities)
           self.search_results.trigger_reset_populate()
-
+      
+      def args_converter(self,index,data_item):
+            city,country= data_item
+            return {'location':(city,country)}
+      
 class LocationButton(ListItemButton):
-     pass
+     location= ListProperty()
+
+class CurrentWeather(BoxLayout):
+      location= ListProperty(['New York','US'])
+      conditions=StringProperty()
+      temp=NumericProperty()
+      temp_min=NumericProperty()
+      temp_max=NumericProperty()
       
 class WeatherApp(App):
       pass
